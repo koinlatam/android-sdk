@@ -50,20 +50,20 @@ To start using the library you need at least to register your organizationId and
 
 ```kotlin
 KoinFingerprinter.register(applicationContext, ORGANIZATION_ID)
-val sessionID = DeviceFingerprint().profile(applicationContext)
+val sessionID = KoinFingerprinter.profile(applicationContext)
 ```
 
 You can register an endpoint url as well.
 ```kotlin
-DeviceFingerprint.register(applicationContext, ORGANIZATION_ID, "https://api-sandbox.koin.com.br/fingerprint/session/mobile")
-DeviceFingerprint.profile(applicationContext)
+KoinFingerprinter.register(applicationContext, ORGANIZATION_ID, "https://api-sandbox.koin.com.br/fingerprint/session/mobile")
+KoinFingerprinter.profile(applicationContext)
 ```
 This url will replace the default.
 
 ### Placing within the app
 
 A couple considerations to place the library calls in your code.
-You should always register your organization ID before making other calls of this library. (`DeviceFingerprint.register(applicationContext, ORGANIZATION_ID)`)
+You should always register your organization ID before making other calls of this library. (`KoinFingerprinter.register(applicationContext, ORGANIZATION_ID)`)
 The `profile()` methods will start gathering information and send it as soon as this is complete, making multiple calls to these methods will send information multiple times. 
 We recomend to have a single call to a `profile()` method within the apps life cycle.
 You can place it right at the `Application.onCreate()` or at any later point, as long as you have an `applicationContext` to pass to it.
@@ -78,14 +78,14 @@ There are two way of start the information gathering.
 If you need a sessionID you should use:
 
 ```kotlin
-val sessionID = DeviceFingerprint.profile(applicationContext)
+val sessionID = KoinFingerprinter.profile(applicationContext)
 ```
 
 This will return a sessionID as a UUIDv4.
 
 If you have a sessionID you can use 
 ```kotlin
-DeviceFingerprint.profile(applicationContext, "YOUR_SESSION_ID")
+KoinFingerprinter.profile(applicationContext, "YOUR_SESSION_ID")
 ```
 
 
