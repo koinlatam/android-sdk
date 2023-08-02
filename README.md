@@ -1,21 +1,21 @@
-# FingerprintSDK
+# KoinFingerprinter
 
-FingerprintSDK is a device information gathering library for Android written in Kotlin.
+KoinFingerprinter is a device information gathering library for Android written in Kotlin.
 
 ## Installation
 
 There are many ways to install the provided fingerprint-sdk.arr file.
 
-We recomend for you to copy the fingerprint-sdk.arr file into the libs folder in your app.
+We recomend for you to copy the android-sdk-v.0.0.1.arr file into the libs folder in your app.
 
-Add the line `implementation files('libs/fingerprint-sdk-release.aar')`to your project's dependencies.
+Add the line `implementation files('libs/android-sdk-v.0.0.1.aar')`to your project's dependencies.
 
 It should look something like this:
 
 ```gradle
 dependencies {
     ...
-    implementation files('libs/fingerprint-sdk-release.aar')
+    implementation files('libs/android-sdk-v.0.0.1.aar')
     ...
 }
 ```
@@ -43,13 +43,13 @@ Note: These libraries have the minimum version needed for the library to work.
 To start using the library you need at least to register your organizationId and then call one of the profile funtions.`
 
 ```kotlin
-DeviceFingerprint.register(ORGANIZATION_ID)
+KoinFingerprinter.register(applicationContext, ORGANIZATION_ID)
 val sessionID = DeviceFingerprint().profile(applicationContext)
 ```
 
 You can register an endpoint url as well.
 ```kotlin
-DeviceFingerprint.register(ORGANIZATION_ID, "https://api-sandbox.koin.com.br/fingerprint/session/mobile")
+DeviceFingerprint.register(applicationContext, ORGANIZATION_ID, "https://api-sandbox.koin.com.br/fingerprint/session/mobile")
 DeviceFingerprint.profile(applicationContext)
 ```
 This url will replace the default.
@@ -57,7 +57,7 @@ This url will replace the default.
 ### Placing within the app
 
 A couple considerations to place the library calls in your code.
-You should always register your organization ID before making other calls of this library. (`DeviceFingerprint.register(ORGANIZATION_ID)`)
+You should always register your organization ID before making other calls of this library. (`DeviceFingerprint.register(applicationContext, ORGANIZATION_ID)`)
 The `profile()` methods will start gathering information and send it as soon as this is complete, making multiple calls to these methods will send information multiple times. 
 We recomend to have a single call to a `profile()` method within the apps life cycle.
 You can place it right at the `Application.onCreate()` or at any later point, as long as you have an `applicationContext` to pass to it.
