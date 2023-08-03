@@ -9,6 +9,14 @@ KoinFingerprinter is a device information gathering library for Android written 
 There are many ways to install the provided fingerprint-sdk.arr file.
 
 We recomend for you to install the github package [`br.com.koin.android-sdk`](https://github.com/koinlatam/android-sdk/packages/1914404/)
+```maven
+<dependency>
+    <groupId>br.com.koin</groupId>
+    <artifactId>android-sdk</artifactId>
+    <version>0.0.1</version>
+    <type>aar</type>
+</dependency>
+```
 
 ---
 
