@@ -12,16 +12,16 @@ We recomend for you to install the github package [`br.com.koin.android-sdk`](ht
 
 ---
 
-The other way, not recommended, is to copy the android-sdk-v.0.0.1.arr file into the libs folder in your app.
+The other way, not recommended, is to copy the fingerprint-sdk-release.aar file into the libs folder in your app.
 
-Add the line `implementation files('libs/android-sdk-v.0.0.1.aar')`to your project's dependencies.
+Add the line `implementation files('libs/fingerprint-sdk-release.aar')`to your project's dependencies.
 
 It should look something like this:
 
 ```gradle
 dependencies {
     ...
-    implementation files('libs/android-sdk-v.0.0.1.aar')
+    implementation files('libs/fingerprint-sdk-release.aar')
     ...
 }
 ```
