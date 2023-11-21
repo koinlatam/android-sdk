@@ -11,7 +11,7 @@ We recomend for you to install the github package [`br.com.koin.android-sdk`](ht
 <dependency>
     <groupId>br.com.koin</groupId>
     <artifactId>android-sdk</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <type>aar</type>
 </dependency>
 ```
