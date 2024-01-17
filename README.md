@@ -4,7 +4,7 @@ KoinFingerprinter is a device information gathering library for Android written 
 
 ## Installation
 
-Download the .aar file of the corresponding release and place it on the project "libs" carpet
+Download the .aar file of the corresponding release and place it on the project "libs" directory
 
 Add the line `implementation files('libs/fingerprint-sdk-release.aar')`to your project's dependencies.
 
