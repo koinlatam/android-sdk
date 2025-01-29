@@ -26,10 +26,10 @@ If you get a message error about permissions related to the library, try adding 
 
 ```gradle
 dependencies {
-    implementation 'com.android.volley:volley:1.1.+'
-    implementation 'com.google.android.gms:play-services-location:15.0.+'
-    implementation 'com.google.android.gms:play-services-ads-identifier:15.0.+'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.+'
+    implementation 'com.android.volley:volley:1.2.1'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
 }
 ```
 
