@@ -2,6 +2,16 @@
 
 KoinFingerprinter is a device information gathering library for Android written in Kotlin.
 
+# Flutter SDK Integration Example
+
+If you are using Flutter, you can check this **proof of concept (PoC)** where the example SDK is integrated:
+
+🔗 [Flutter SDK Integration Example](https://github.com/koinlatam/android-sdk/tree/main/test_flutter)
+
+This project demonstrates how to integrate the SDK within a Flutter project, including dependency management and native communication via `MethodChannel`.
+
+Feel free to explore the project and adapt it to your needs.
+
 ## Installation
 
 Download the .aar file of the corresponding release and place it on the project "libs" directory
