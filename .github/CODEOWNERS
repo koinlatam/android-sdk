@@ -1,6 +1,0 @@
-# CODEOWNERS - https://docs.github.com/en/repositories/managing-your-repositories-settings-and-security/managing-repository-settings/about-code-owners
-#
-# Rule 1: all other files in the repository require approval from the designated approver.
-# Rule 2: changes to this very file require approval from the security team only.
-*                    @koinlatam/fraud-managers @koinlatam/fraud-devs
-/.github/CODEOWNERS  @koinlatam/security
