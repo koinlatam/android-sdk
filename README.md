@@ -1,26 +1,16 @@
-# KoinFingerprinter
+# Koin Android Fingerprint SDK
 
-KoinFingerprinter is a device information gathering library for Android, written in Kotlin. It collects device, application, connectivity, behavioral, and integrity signals and sends them to Koin's fingerprint API using a session identifier.
+KoinFingerprinter is an Android library written in Kotlin. It gathers configurable device, app, network, behavioral, and integrity signals, then sends the resulting fingerprint payload to the configured Koin endpoint.
 
-**Repository:** [github.com/koinlatam/android-sdk](https://github.com/koinlatam/android-sdk)
-
----
-
-## Requirements
-
-- Android `minSdk` 19 or higher
-- Kotlin or Java app module
-- Internet access (`INTERNET` is declared by the SDK)
-
----
+**Current source version:** `1.3.1`  
+**Minimum Android version:** API 24 (Android 7.0)  
+**Source repository:** [github.com/koinlatam/android-sdk](https://github.com/koinlatam/android-sdk)
 
 ## Installation
 
-### Option A — Release AAR (recommended)
+### AAR
 
-1. Open [Releases](https://github.com/koinlatam/android-sdk/releases) and download `fingerprint-sdk-release.aar` from the version you need (latest: **[KoinFingerprinter-1.0.1](https://github.com/koinlatam/android-sdk/releases)**).
-2. Copy the file into your app module's `libs/` folder.
-3. Add the dependency in `app/build.gradle`:
+Copy the `fingerprint-sdk-release.aar` supplied for the version you are integrating into your app module's `libs/` directory, then add:
 
 ```gradle
 dependencies {
@@ -28,44 +18,27 @@ dependencies {
 }
 ```
 
-4. Sync Gradle.
+If the AAR distribution does not provide transitive dependency metadata, also add the runtime libraries used by the SDK:
 
-> A copy of the AAR may also exist at the [repository root](https://github.com/koinlatam/android-sdk/blob/main/fingerprint-sdk-release.aar) for convenience. Prefer the asset attached to the [release](https://github.com/koinlatam/android-sdk/releases) that matches your integration version.
-
----
-
-### Option B — GitHub Packages (Maven)
-
-If your organization publishes and grants access to the Maven package, you can depend on it without copying the AAR manually.
-
-| Field | Value |
-|--------|--------|
-| Group ID | `br.com.koin` |
-| Artifact ID | `android-sdk` |
-| Repository URL | `https://maven.pkg.github.com/koinlatam/android-sdk` |
-
-#### 1. Authentication
-
-Create a GitHub Personal Access Token (classic) with at least the **`read:packages`** scope.
-
-Store credentials locally (**do not commit tokens to git**).
-
-In `~/.gradle/gradle.properties` or a local, gitignored `gradle.properties`:
-
-```properties
-gpr.user=YOUR_GITHUB_USERNAME
-gpr.key=YOUR_GITHUB_PAT
+```gradle
+dependencies {
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.biometric:biometric:1.1.0'
+    implementation 'com.android.volley:volley:1.2.+'
+    implementation 'com.google.android.gms:play-services-location:15.0.+'
+    implementation 'com.google.android.gms:play-services-ads-identifier:15.0.+'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3'
+}
 ```
 
-For CI, use environment variables `GITHUB_ACTOR` and `GITHUB_TOKEN` (or a dedicated PAT with `read:packages`).
+These coordinates and versions match the current SDK module build. Resolve any dependency conflicts using versions compatible with your app.
 
-#### 2. Register the Maven repository
+### GitHub Packages
 
-In `settings.gradle` (Gradle 7+):
+If version `1.3.1` is published to your organization's GitHub Packages registry, configure the repository with a GitHub token that has `read:packages` access. Keep the token in local Gradle properties or CI secrets; do not commit it.
 
 ```gradle
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
@@ -80,217 +53,180 @@ dependencyResolutionManagement {
 }
 ```
 
-If your project uses `allprojects { repositories { ... } }` in the root `build.gradle`, add the same `maven { ... }` block there instead.
-
-#### 3. Add the dependency
-
-Use the version that matches your release (e.g. `1.0.1`):
+Then add the SDK dependency:
 
 ```gradle
 dependencies {
-    implementation "br.com.koin:android-sdk:1.0.1"
+    implementation "br.com.koin:android-sdk:1.3.1"
 }
 ```
 
-Sync Gradle.
-
-If dependency resolution fails, confirm with your Koin contact that the package is published and that your token has `read:packages`. Until then, use **Option A**.
-
----
-
-### Transitive dependencies
-
-If Gradle reports missing classes, add these to your **app** module:
-
-```gradle
-dependencies {
-    implementation 'com.android.volley:volley:1.2.1'
-    implementation 'com.google.android.gms:play-services-location:21.3.0'
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
-}
-```
-
-These are the minimum versions required for the library to work; newer compatible versions are usually acceptable.
-
----
+Ask your Koin contact whether the package version is available to your account. If Gradle cannot resolve it, use the AAR distribution.
 
 ## Quick start
 
+Register the SDK during app startup, then call `profile` when the app is ready to send a fingerprint. Use an `Application` context where possible.
+
 ```kotlin
+import android.app.Application
 import br.com.koin.android_sdk.KoinFingerprinter
 
-// Once per app launch (e.g. Application.onCreate)
-KoinFingerprinter.register(applicationContext, "YOUR_ORGANIZATION_ID")
-
-// Once per app lifecycle (recommended)
-val sessionId = KoinFingerprinter.profile(applicationContext)
-```
-
-Replace `YOUR_ORGANIZATION_ID` with the value provided by Koin.
-
----
-
-## Usage
-
-### Register
-
-Always call `register` before `profile`. Use `applicationContext` when possible.
-
-```kotlin
-KoinFingerprinter.register(applicationContext, ORGANIZATION_ID)
-```
-
-**Custom API endpoint** (optional third parameter):
-
-```kotlin
-KoinFingerprinter.register(
-    applicationContext,
-    ORGANIZATION_ID,
-    "https://api-sandbox.koin.com.br/fingerprint/session/mobile"
-)
-```
-
-If omitted, the default endpoint is:
-
-`https://api-sandbox.koin.com.br/fingerprint/session/mobile`
-
-**Additional options** (optional):
-
-```kotlin
-import br.com.koin.android_sdk.config.FingerprintConfig
-
-KoinFingerprinter.register(
-    c = applicationContext,
-    organizationId = ORGANIZATION_ID,
-    url = "https://api-sandbox.koin.com.br/fingerprint/session/mobile",
-    disableGeo = true,              // default: true
-    timeout = 1.0,                  // seconds; minimum 1.0
-    config = FingerprintConfig(),   // optional: enable/disable data categories
-    customTargetApps = emptyList()  // optional: package names for app targeting
-)
-```
-
-| Parameter | Description |
-|-----------|-------------|
-| `disableGeo` | Default `true`. Set to `false` only if your app already granted location permission. The SDK does **not** show permission dialogs. |
-| `timeout` | Maximum harvest time in seconds (minimum `1.0`). |
-| `config` | Fine-grained control of collected fields (`FingerprintConfig`). |
-| `customTargetApps` | Package names used by the installed-apps harvester. |
-
-### Profile
-
-There are two ways to start information gathering.
-
-**Let the SDK create or reuse a session ID** (returns a UUID v4 string):
-
-```kotlin
-val sessionId = KoinFingerprinter.profile(applicationContext)
-```
-
-- Reuses a stored session when still valid.
-- Sessions expire after **2 hours**; a new ID is created on the next call without a custom ID.
-- Data collection and upload run in the **background**; the returned `sessionId` is available immediately.
-
-**Use your own session ID:**
-
-```kotlin
-KoinFingerprinter.profile(applicationContext, "YOUR_SESSION_ID")
-```
-
-This overload does not return a value.
-
-### Placing calls in your app
-
-1. Call **`register` once** before any `profile` call (`KoinFingerprinter.register(applicationContext, ORGANIZATION_ID)`).
-2. Call **`profile` once per app lifecycle** when you are ready to send data. Multiple calls send multiple payloads.
-3. You may call `register` in `Application.onCreate()` and `profile` at any later point, as long as you pass `applicationContext`.
-4. The SDK **does not** request permissions. Your app should request them if you need richer data:
-   - `ACCESS_WIFI_STATE`
-   - `ACCESS_FINE_LOCATION` / `ACCESS_COARSE_LOCATION` (only relevant if `disableGeo = false`)
-
-If your app already asks for location or Wi‑Fi permissions, consider calling `profile` after the user grants them.
-
-### Example: Application class
-
-```kotlin
 class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
+
         KoinFingerprinter.register(
             c = this,
-            organizationId = BuildConfig.KOIN_ORG_ID,
-            url = BuildConfig.KOIN_FINGERPRINT_URL,
-            disableGeo = false // only if your app handles location permission
+            organizationId = BuildConfig.KOIN_ORGANIZATION_ID
         )
-        KoinFingerprinter.profile(this)
+
+        val sessionId = KoinFingerprinter.profile(this)
     }
 }
 ```
 
-### Configuration (`FingerprintConfig`)
+The default endpoint in the source is the Koin sandbox endpoint:
 
-Import types from `br.com.koin.android_sdk.config`. By default, all harvester categories and fields are enabled. You can disable entire categories or individual fields:
+`https://api-sandbox.koin.com.br/fingerprint/session/mobile`
+
+Pass the endpoint provided by Koin when your integration should use a different environment. The `profile` call returns immediately; collection and the HTTP POST run asynchronously, and the SDK does not provide a completion callback.
+
+## Registration options
+
+`register` must run before `profile`. Its parameters are:
+
+| Parameter | Behavior |
+| --- | --- |
+| `c` | Android `Context`; use the `Application` when available so lifecycle tracking can be initialized. |
+| `organizationId` | Organization identifier sent with the fingerprint payload. |
+| `url` | API endpoint; defaults to the sandbox URL above. |
+| `geoLocationEnabled` | Master switch for collecting last-known geographic coordinates; defaults to `false`. The app must also have location permission and `config.location.geoLocationEnabled` enabled. |
+| `timeout` | Harvester timeout in seconds; defaults to `1.0`. Values below `1.0` are raised to the minimum. |
+| `config` | `FingerprintConfig` instance for enabling/disabling data categories and individual fields. |
+| `customTargetApps` | Optional package names to include in installed-app targeting. On Android 11+, the host app may need matching `<queries>` declarations for custom packages. |
+
+Example with explicit settings:
 
 ```kotlin
 import br.com.koin.android_sdk.config.FingerprintConfig
-import br.com.koin.android_sdk.config.BehavioralConfig
 import br.com.koin.android_sdk.config.LocationConfig
 
 KoinFingerprinter.register(
-    applicationContext,
-    ORGANIZATION_ID,
+    c = application,
+    organizationId = BuildConfig.KOIN_ORGANIZATION_ID,
+    url = BuildConfig.KOIN_FINGERPRINT_URL,
+    geoLocationEnabled = true,
+    timeout = 2.0,
     config = FingerprintConfig(
-        behavioral = BehavioralConfig(
-            enabled = true,
-            touchPatterns = false
-        ),
-        location = LocationConfig(enabled = false)
-    )
+        location = LocationConfig(geoLocationEnabled = true)
+    ),
+    customTargetApps = listOf("com.example.bank")
 )
 ```
 
-Categories: `application`, `behavioral`, `connectivity`, `device`, `environment`, `hardware`, `installedApps`, `integrity`, `location`, `operativeSystem`, `screen`, `security`, `sensors`.
+## Sessions and profiling
 
-Each category data class exposes `enabled` plus field-level `Boolean` flags.
+The SDK offers two `profile` overloads:
 
----
+```kotlin
+// SDK creates or reuses a session ID and returns it immediately.
+val sessionId: String = KoinFingerprinter.profile(applicationContext)
 
-## Flutter integration
+// Use a session ID managed by the host app.
+KoinFingerprinter.profile(applicationContext, "YOUR_SESSION_ID")
+```
 
-If you are using Flutter, see the [**Flutter SDK Integration Example**](https://github.com/koinlatam/android-sdk/tree/main/test_flutter) in this repository.
+The SDK persists its session ID and reuses it until it expires after two hours. The explicit-ID overload stores the supplied ID and returns no value. Each call starts a new asynchronous collection and send.
 
-It demonstrates how to integrate the SDK in a Flutter project, including dependency management and native communication via `MethodChannel`.
+The outgoing payload contains the SDK and schema versions, organization and session IDs, execution metrics, and the collected mobile-application data.
 
----
+## Data configuration
 
-## Permissions and privacy
+`FingerprintConfig` has configuration groups for `accounts`, `application`, `behavioral`, `calendar`, `connectivity`, `contacts`, `device`, `environment`, `hardware`, `installedApps`, `integrity`, `location`, `media`, `operativeSystem`, `screen`, `security`, `sensors`, and `telecom`. Each group provides an `enabled` switch and, for most groups, individual Boolean field switches.
 
-- The SDK declares only `INTERNET` in its manifest.
-- It **never** calls `requestPermissions`; the host app is responsible for permission UX.
-- Without grants, affected fields are omitted or empty — no crash and no permission dialog from the SDK.
+Most groups and fields are enabled by default. `calendar` and `media` are disabled by default. Geographic coordinates are also disabled unless both the top-level `geoLocationEnabled` argument and `config.location.geoLocationEnabled` are true.
 
----
+```kotlin
+import br.com.koin.android_sdk.config.BehavioralConfig
+import br.com.koin.android_sdk.config.DeviceConfig
+import br.com.koin.android_sdk.config.FingerprintConfig
+
+val config = FingerprintConfig(
+    device = DeviceConfig(enabled = false),
+    behavioral = BehavioralConfig(
+        enabled = true,
+        touchPatterns = false,
+        typingCadence = false
+    )
+)
+
+KoinFingerprinter.register(
+    c = application,
+    organizationId = BuildConfig.KOIN_ORGANIZATION_ID,
+    config = config
+)
+```
+
+### Typing cadence
+
+Behavioral tracking is initialized by `register`. To provide typing cadence events from text fields, call `KoinFingerprinterTyping.trackTextChange` when the field value changes. The SDK uses the positive character-count delta; it does not need the field's text contents.
+
+```kotlin
+import br.com.koin.android_sdk.KoinFingerprinterTyping
+
+KoinFingerprinterTyping.trackTextChange(oldValue, newValue)
+```
+
+## Java and .NET MAUI integration
+
+For Java or .NET MAUI Slim Binding consumers, use the explicit-overload facade in `br.com.koin.android_sdk.interop`. It avoids Kotlin default-parameter interop:
+
+```java
+KoinFingerprintBridge.register(
+    context,
+    organizationId,
+    KoinFingerprintBridge.DEFAULT_URL,
+    false, // geoLocationEnabled
+    KoinFingerprintBridge.MIN_TIMEOUT
+);
+String sessionId = KoinFingerprintBridge.profile(context);
+```
+
+`BridgeRegisterOptions` is available for property-based registration, including `customTargetApps`. The bridge validates that the organization ID, URL, and any caller-supplied session ID are not blank. Profiling remains fire-and-forget.
+
+## Permissions and package visibility
+
+The SDK does not show permission dialogs. The host app is responsible for declaring and requesting the Android permissions needed for the optional data it wants to collect. Without a grant, permission-dependent values are omitted or returned with safe defaults.
+
+Common examples include:
+
+| Data | Host-app permission (when needed) |
+| --- | --- |
+| Location | `ACCESS_FINE_LOCATION` or `ACCESS_COARSE_LOCATION` |
+| Accounts | `GET_ACCOUNTS` |
+| Calendar | `READ_CALENDAR` |
+| Contacts | `READ_CONTACTS` |
+| Media | `READ_MEDIA_IMAGES` / `READ_MEDIA_VIDEO` on newer Android versions, or `READ_EXTERNAL_STORAGE` on older versions |
+| Call and SMS statistics | `READ_CALL_LOG` and/or `READ_SMS` |
+| Network state | `ACCESS_NETWORK_STATE` |
+
+The SDK manifest declares `INTERNET` and package-visibility `<queries>` used by installed-app and security checks. On Android 11 and later, add package queries in the host app for any custom target packages not already visible through the SDK's declarations.
+
+## Build compatibility
+
+The SDK module is built with compile SDK 36 and declares minimum SDK 24. A host app can use its own supported compile/target SDK settings, subject to the Android Gradle Plugin and dependency compatibility requirements.
 
 ## Troubleshooting
 
-| Symptom | What to check |
-|---------|----------------|
-| Could not resolve `br.com.koin:android-sdk` | Package not published or token missing `read:packages`; use the Release AAR instead |
-| Log: `No organizationId provided` | Call `register` before `profile` |
-| Log: `No sessionId provided` | Use `profile(context)` or pass a non-empty session ID |
-| Missing Volley / Play Services classes | Add transitive dependencies listed above |
-| No location in payload | Set `disableGeo = false` and grant location permission in **your** app |
+| Symptom | Check |
+| --- | --- |
+| `No organizationId provided` | Call `register` with a non-empty organization ID before `profile`. |
+| `No sessionId provided` | Use `profile(context)` or pass a non-empty session ID. |
+| No geographic coordinates | Set both geo switches to `true` and grant location permission in the host app. |
+| Permission-dependent fields are missing | Declare and request the permission in the host app before profiling. |
+| Custom target apps are not visible | Add matching `<queries>` declarations to the host app on Android 11+. |
+| Maven dependency cannot be resolved | Confirm the package is published and that the GitHub token has `read:packages`; otherwise use the AAR. |
 
----
+## Version
 
-## Versioning
-
-See [Releases](https://github.com/koinlatam/android-sdk/releases) for changelog and downloadable artifacts.
-
-| Release | Notes |
-|---------|--------|
-| [KoinFingerprinter-1.0.1](https://github.com/koinlatam/android-sdk/releases) | Latest |
-
-For organization IDs and production endpoints, contact your Koin representative.
+The current module source sets `sdkVersion` to `1.3.1`. Check with Koin for the published release or Maven package corresponding to the source you integrate.
