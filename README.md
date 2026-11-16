@@ -2,7 +2,7 @@
 
 KoinFingerprinter is an Android library written in Kotlin. It gathers configurable device, app, network, behavioral, and integrity signals, then sends the resulting fingerprint payload to the configured Koin endpoint.
 
-**Current source version:** `1.3.1`  
+**Current source version:** `1.4.0`  
 **Minimum Android version:** API 24 (Android 7.0)  
 **Source repository:** [github.com/koinlatam/android-sdk](https://github.com/koinlatam/android-sdk)
 
@@ -229,4 +229,4 @@ The SDK module is built with compile SDK 36 and declares minimum SDK 24. A host 
 
 ## Version
 
-The current module source sets `sdkVersion` to `1.3.1`. Check with Koin for the published release or Maven package corresponding to the source you integrate.
+The current module source sets `sdkVersion` to `1.4.0`. Check with Koin for the published release or Maven package corresponding to the source you integrate.
